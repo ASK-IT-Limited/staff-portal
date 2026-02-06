@@ -3,31 +3,15 @@ import { Card } from '../shared/Card';
 
 const IframeContainer = styled.div`
   overflow: hidden;
-  height: 550px;
+  height: 70vh;
   border-radius: 8px;
-  
-  @media (max-width: 768px) {
-    height: 450px;
-  }
-  
-  @media (max-width: 480px) {
-    height: 400px;
-  }
 `;
 
 const StyledIframe = styled.iframe`
   border: none;
-  clip-path: inset(65px 7px 0 0);
+  clip-path: inset(60px 6px 0 0);
   width: 100%;
-  height: 600px;
-  
-  @media (max-width: 768px) {
-    height: 500px;
-  }
-  
-  @media (max-width: 480px) {
-    height: 450px;
-  }
+  height: 100%;
 `;
 
 export function Amy() {
