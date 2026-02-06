@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { fadeIn } from '../../styles/animations';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
+import askitLogoColor from '../../img/askit_logo_color.png';
 
 const STORAGE_KEY = 'staff_portal_credentials';
 
@@ -12,7 +13,7 @@ const Screen = styled.div`
 
 const Title = styled.h1`
   color: ${({ theme }) => theme.colors.text};
-  margin-bottom: 8px;
+  margin-bottom: 32px;
   font-size: 24px;
   font-weight: 600;
   
@@ -21,15 +22,13 @@ const Title = styled.h1`
   }
 `;
 
-const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 32px;
-  font-size: 14px;
-  font-weight: 400;
+const LogoContainer = styled.div`
+  display: flex;
+  justify-content: center;
   
-  @media (max-width: 480px) {
-    margin-bottom: 24px;
-    font-size: 13px;
+  img {
+    height: 80px;
+    width: auto;
   }
 `;
 
@@ -147,8 +146,10 @@ export function LoginScreen({ onSubmit, error }) {
 
   return (
     <Screen>
+      <LogoContainer>
+        <img src={askitLogoColor} alt="Askit Logo" />
+      </LogoContainer>
       <Title>Staff Portal</Title>
-      <Subtitle>Sign in to access handy tools</Subtitle>
 
       <ErrorMessage $show={!!error}>
         {error || 'Invalid email or password. Please try again.'}
