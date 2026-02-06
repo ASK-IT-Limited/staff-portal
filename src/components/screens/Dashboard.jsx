@@ -5,6 +5,7 @@ import { MyProfile } from './MyProfile';
 import { TimesheetGenerator } from './TimesheetGenerator';
 import { Amy } from './Amy';
 import { DashboardHome } from './DashboardHome';
+import askitLogo from '../../img/askit_logo_white.png';
 import {
   LayoutDashboard,
   User,
@@ -39,7 +40,7 @@ const Overlay = styled.div`
 `;
 
 const Sidebar = styled.aside`
-  width: 220px;
+  width: 250px;
   background: #2c5aa0;
   color: #fff;
   padding: 0;
@@ -361,7 +362,10 @@ export function Dashboard({ employee, onRefresh, onLogout }) {
       <Overlay $isOpen={isSidebarOpen} onClick={() => setIsSidebarOpen(false)} />
       <Sidebar $isOpen={isSidebarOpen}>
         <SidebarHeader>
-          <Logo>Staff Portal</Logo>
+          <Logo>
+            <img src={askitLogo} alt="Askit Logo" style={{ height: '24px', marginRight: '12px' }} />
+            Staff Portal
+          </Logo>
           <SidebarHeaderActions>
             <CloseButton onClick={() => setIsSidebarOpen(false)}>
               <X size={20} />
