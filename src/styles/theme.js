@@ -1,0 +1,26 @@
+export const theme = {
+  colors: {
+    primary: '#2c5aa0',
+    primaryHover: '#234a85',
+    primaryActive: '#1d3d6e',
+    success: '#059669',
+    error: '#b91c1c',
+    errorBg: '#fef2f2',
+    errorBorder: '#fecaca',
+    text: '#1a1a1a',
+    textSecondary: '#666',
+    textMuted: '#555',
+    background: '#f5f5f5',
+    white: '#ffffff',
+    border: '#d1d1d1',
+    borderLight: '#e5e5e5',
+  },
+  borderRadius: '4px',
+  boxShadow: {
+    card: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    cardHover: '0 8px 24px rgba(0, 0, 0, 0.12)',
+    button: '0 4px 12px rgba(44, 90, 160, 0.2)',
+    buttonSecondary: '0 4px 12px rgba(0, 0, 0, 0.1)',
+  },
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
+};
