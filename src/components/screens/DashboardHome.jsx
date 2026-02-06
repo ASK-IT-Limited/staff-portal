@@ -45,29 +45,6 @@ const QuickActionsGrid = styled.div`
 export function DashboardHome({ employee, onNavigate }) {
   return (
     <>
-      <StatsGrid>
-        <StatCard $color="#10b981">
-          <StatLabel>TBC</StatLabel>
-          <StatValue>I</StatValue>
-          <StatIcon><Hash size={20} /></StatIcon>
-        </StatCard>
-        <StatCard $color="#f59e0b">
-          <StatLabel>TBC</StatLabel>
-          <StatValue>Love</StatValue>
-          <StatIcon><Building2 size={20} /></StatIcon>
-        </StatCard>
-        <StatCard $color="#3b82f6">
-          <StatLabel>TBC</StatLabel>
-          <StatValue>ASK</StatValue>
-          <StatIcon><CheckCircle size={20} /></StatIcon>
-        </StatCard>
-        <StatCard $color="#8b5cf6">
-          <StatLabel>TBC</StatLabel>
-          <StatValue>IT</StatValue>
-          <StatIcon><UserCircle size={20} /></StatIcon>
-        </StatCard>
-      </StatsGrid>
-
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
