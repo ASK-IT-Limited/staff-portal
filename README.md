@@ -1,39 +1,60 @@
-# Staff Portal Frontend
+# Staff Portal
 
-This guide will help you set up the frontend of the Staff Portal application.
+A React-based staff portal application built with Vite and styled-components.
 
-## Prerequisites
 
-- **Node.js** (v16 or higher) for the frontend
+## Requirements
 
-## Setup
+- Node.js (v16 or higher)
 
-### 1. Navigate to the project root
 
-```bash
-cd ..  # If you're in the backend directory
-```
+## Quick Setup
 
-### 2. Install dependencies
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
+### 2. Configure Environment
+
+Copy `.env.example` to `.env` and configure **all required variables**:
 
 ```bash
-# Copy the example env file
-copy .env.example .env    # Windows
-cp .env.example .env      # macOS/Linux
+cp .env.example .env
 ```
 
-The default configuration points to `http://localhost:8000/api` which should work if your backend is running locally.
-
-### 4. Start the development server
+### 3. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-The frontend will be available at: `http://localhost:5173` (or another port if 5173 is in use)
+### 4. Done
+
+The application will be available at `http://localhost:5173`
+
+
+## Deployment
+
+This frontend automatically builds and deploys to GitHub Pages upon pushing changes to the main branch.
+
+
+## Structure
+
+```
+staff-portal/
+├── src/
+│   ├── components/
+│   │   ├── layout/          # Layout components (Container, Footer)
+│   │   ├── screens/         # Main screen components (Dashboard, Login, etc.)
+│   │   └── shared/          # Reusable UI components (Button, Card, Input, etc.)
+│   ├── hooks/               # Custom React hooks (useLogin)
+│   ├── services/            # API service layer
+│   ├── styles/              # Global styles, theme, and animations
+│   ├── img/                 # Static images
+│   ├── App.jsx              # Main app component
+│   └── main.jsx             # Application entry point
+├── .github/workflows/       # CI/CD workflows
+└── vite.config.js           # Vite configuration
+```
