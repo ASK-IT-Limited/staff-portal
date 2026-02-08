@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { fadeIn } from '../../styles/animations';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
 import askitLogoColor from '../../img/askit_logo_color.png';
-
-const STORAGE_KEY = 'staff_portal_credentials';
 
 const Screen = styled.div`
   animation: ${fadeIn} 0.4s ease-in forwards;
@@ -54,34 +52,6 @@ const ErrorMessage = styled.div`
 
 const Form = styled.form``;
 
-const RememberMeContainer = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  
-  @media (max-width: 480px) {
-    font-size: 13px;
-    margin-bottom: 16px;
-  }
-`;
-
-const Checkbox = styled.input`
-  width: 16px;
-  height: 16px;
-  accent-color: ${({ theme }) => theme.colors.primary};
-  cursor: pointer;
-  flex-shrink: 0;
-  
-  @media (max-width: 480px) {
-    width: 18px;
-    height: 18px;
-  }
-`;
-
 const ForgotPasswordLink = styled.button`
   background: none;
   border: none;
@@ -109,33 +79,9 @@ const ForgotPasswordLink = styled.button`
 export function LoginScreen({ onSubmit, error }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-
-  // Load saved credentials on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const { email: savedEmail, password: savedPassword } = JSON.parse(saved);
-        setEmail(savedEmail || '');
-        setPassword(savedPassword || '');
-        setRememberMe(true);
-      }
-    } catch {
-      // Ignore parsing errors
-    }
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Save or clear credentials based on remember me checkbox
-    if (rememberMe) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ email, password }));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-    
     onSubmit(email, password);
   };
 
@@ -177,16 +123,6 @@ export function LoginScreen({ onSubmit, error }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
-        <RememberMeContainer>
-          <Checkbox
-            type="checkbox"
-            id="rememberMe"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          />
-          Remember me
-        </RememberMeContainer>
 
         <Button type="submit">Login</Button>
 
