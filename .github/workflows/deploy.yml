@@ -24,6 +24,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: echo "VITE_API_BASE_URL=https://staff-portal-backend-ye01.onrender.com/api" > .env
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
