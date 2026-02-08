@@ -51,6 +51,34 @@ export function setSessionExpiredHandler(handler) {
   onSessionExpired = handler;
 }
 
+// Token management
+const TOKEN_KEY = 'access_token';
+
+export function getAccessToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setAccessToken(token) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  }
+}
+
+export function clearAccessToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+// Helper to get auth headers
+function getAuthHeaders() {
+  const token = getAccessToken();
+  if (token) {
+    return {
+      'Authorization': `Bearer ${token}`,
+    };
+  }
+  return {};
+}
+
 // Centralized function to handle responses and check for 401 errors
 async function handleResponse(response, customMessages = {}) {
   if (!response.ok) {
@@ -59,6 +87,9 @@ async function handleResponse(response, customMessages = {}) {
     // Handle 401 - Session expired
     if (response.status === 401) {
       const message = customMessages[401] || error.detail?.msg || error.detail || 'Your session has expired. Please log in again.';
+      
+      // Clear the token on 401
+      clearAccessToken();
       
       // Notify the app that session expired (triggers logout and redirect)
       if (onSessionExpired) {
@@ -91,17 +122,30 @@ export async function login(email, password) {
     body: JSON.stringify({ email, password }),
   });
 
-  return handleResponse(response, {
+  const data = await handleResponse(response, {
     401: 'Invalid email or password. Please try again.',
     429: 'Too many login attempts. Please try again later.',
   });
+
+  // Store the access token if provided
+  if (data.access_token) {
+    setAccessToken(data.access_token);
+  }
+
+  return data;
 }
 
 export async function logout() {
   const response = await fetchWithTimeout(`${API_BASE_URL}/auth/logout`, {
     method: 'POST',
     credentials: 'include', // Important: to clear the cookie
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
+
+  // Clear the token on logout
+  clearAccessToken();
 
   return handleResponse(response);
 }
@@ -110,11 +154,15 @@ export async function getCurrentUser() {
   const response = await fetchWithTimeout(`${API_BASE_URL}/auth/me`, {
     method: 'GET',
     credentials: 'include', // Important: sends the cookie
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   // Special case: for getCurrentUser, 401 means not authenticated (not necessarily expired)
   // This is used on initial page load, so we don't want to trigger the session expired handler
   if (response.status === 401) {
+    clearAccessToken();
     return null; // Not authenticated
   }
 
@@ -127,6 +175,7 @@ export async function generateTimesheetTemplate(email) {
     credentials: 'include', // Important: sends the cookie for authentication
     headers: {
       'Content-Type': 'application/json',
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ email }),
   });
