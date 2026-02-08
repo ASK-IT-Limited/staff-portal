@@ -42,8 +42,8 @@ async function handleResponse(response, customMessages = {}) {
       throw new ApiError(customMessages[response.status], response.status);
     }
     
-    // Handle other error status codes
-    const defaultMessage = error.detail?.msg || error.detail || 'An error occurred. Please try again.';
+    // Handle other error status codes - sanitize error messages to prevent information disclosure
+    const defaultMessage = 'An error occurred. Please try again.';
     throw new ApiError(defaultMessage, response.status);
   }
   
