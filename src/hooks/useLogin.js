@@ -1,25 +1,44 @@
 import { useState, useCallback, useEffect } from 'react';
-import { login as loginApi, ApiError } from '../services/api';
-
-const STORAGE_KEY = 'staff_portal_employee';
+import { login as loginApi, logout as logoutApi, getCurrentUser, ApiError, setSessionExpiredHandler } from '../services/api';
 
 export function useLogin() {
-  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [status, setStatus] = useState('loading'); // 'idle' | 'loading' | 'success' | 'error'
   const [error, setError] = useState(null);
   const [employee, setEmployee] = useState(null);
 
-  // Restore session from localStorage on mount
+  // Register session expiration handler
   useEffect(() => {
-    const savedEmployee = localStorage.getItem(STORAGE_KEY);
-    if (savedEmployee) {
+    const handleSessionExpired = (message) => {
+      console.warn('Session expired:', message);
+      // Clear local state and show error message
+      setEmployee(null);
+      setStatus('idle');
+      setError(message || 'Your session has expired. Please log in again.');
+    };
+    
+    setSessionExpiredHandler(handleSessionExpired);
+    
+    // Cleanup on unmount
+    return () => setSessionExpiredHandler(null);
+  }, []);
+
+  // Restore session from backend cookie on mount
+  useEffect(() => {
+    const checkAuth = async () => {
       try {
-        const parsed = JSON.parse(savedEmployee);
-        setEmployee(parsed);
-        setStatus('success');
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
+        const userData = await getCurrentUser();
+        if (userData) {
+          setEmployee(userData);
+          setStatus('success');
+        } else {
+          setStatus('idle');
+        }
+      } catch (err) {
+        console.error('Failed to restore session:', err);
+        setStatus('idle');
       }
-    }
+    };
+    checkAuth();
   }, []);
 
   const login = useCallback(async (userEmail, password) => {
@@ -30,8 +49,6 @@ export function useLogin() {
       const employeeData = await loginApi(userEmail, password);
       setEmployee(employeeData);
       setStatus('success');
-      // Persist to localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(employeeData));
     } catch (err) {
       setStatus('error');
       if (err instanceof ApiError) {
@@ -43,18 +60,20 @@ export function useLogin() {
   }, []);
 
   const refresh = useCallback(async () => {
-    if (!employee?.email || !employee?.password) {
-      return;
-    }
-
     setStatus('loading');
     setError(null);
 
     try {
-      const employeeData = await loginApi(employee.email, employee.password);
-      setEmployee(employeeData);
-      setStatus('success');
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(employeeData));
+      const userData = await getCurrentUser();
+      if (userData) {
+        setEmployee(userData);
+        setStatus('success');
+      } else {
+        // Session expired, reset to idle
+        setEmployee(null);
+        setStatus('idle');
+        setError('Session expired. Please log in again.');
+      }
     } catch (err) {
       setStatus('error');
       if (err instanceof ApiError) {
@@ -63,14 +82,21 @@ export function useLogin() {
         setError('Failed to refresh data. Please try again.');
       }
     }
-  }, [employee?.email, employee?.password]);
+  }, []);
 
-  const reset = useCallback(() => {
-    setStatus('idle');
-    setError(null);
-    setEmployee(null);
-    // Clear from localStorage on explicit sign out
-    localStorage.removeItem(STORAGE_KEY);
+  const reset = useCallback(async () => {
+    try {
+      // Call backend to invalidate session/cookie
+      await logoutApi();
+    } catch (err) {
+      // Even if logout fails, still clear local state
+      console.error('Logout API error:', err);
+    } finally {
+      // Always clear local state
+      setStatus('idle');
+      setError(null);
+      setEmployee(null);
+    }
   }, []);
 
   return {

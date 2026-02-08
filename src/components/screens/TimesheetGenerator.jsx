@@ -97,7 +97,7 @@ export function TimesheetGenerator({ employee }) {
     setStatus(null);
 
     try {
-      const result = await generateTimesheetTemplate(employee?.email, employee?.password);
+      const result = await generateTimesheetTemplate(employee?.email);
       setStatus({ success: true, message: result.message });
     } catch (error) {
       setStatus({ success: false, message: error.message || 'Failed to generate template. Please try again.' });
