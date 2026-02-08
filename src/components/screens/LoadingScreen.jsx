@@ -25,7 +25,7 @@ export function LoadingScreen() {
   return (
     <Screen>
       <Spinner />
-      <LoadingText>Logging in...</LoadingText>
+      <LoadingText>Loading...</LoadingText>
     </Screen>
   );
 }
