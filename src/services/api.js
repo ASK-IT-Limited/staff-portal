@@ -23,7 +23,7 @@ async function handleResponse(response, customMessages = {}) {
     
     // Handle 401 - Session expired
     if (response.status === 401) {
-      const message = customMessages[401] || error.detail || 'Your session has expired. Please log in again.';
+      const message = customMessages[401] || error.detail?.msg || error.detail || 'Your session has expired. Please log in again.';
       
       // Notify the app that session expired (triggers logout and redirect)
       if (onSessionExpired) {
@@ -39,7 +39,7 @@ async function handleResponse(response, customMessages = {}) {
     }
     
     // Handle other error status codes
-    const defaultMessage = error.detail || 'An error occurred. Please try again.';
+    const defaultMessage = error.detail?.msg || error.detail || 'An error occurred. Please try again.';
     throw new ApiError(defaultMessage, response.status);
   }
   
