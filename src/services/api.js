@@ -5,11 +5,42 @@ if (!API_BASE_URL) {
   throw new Error('VITE_API_BASE_URL environment variable is not set. Please check your .env file.');
 }
 
+// Default timeout for API requests (in milliseconds)
+const DEFAULT_TIMEOUT = 10000; // 10 seconds
+
 export class ApiError extends Error {
   constructor(message, status) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+  }
+}
+
+export class TimeoutError extends Error {
+  constructor(message = 'Request timeout') {
+    super(message);
+    this.name = 'TimeoutError';
+  }
+}
+
+// Fetch wrapper with timeout support
+async function fetchWithTimeout(url, options = {}, timeout = DEFAULT_TIMEOUT) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new TimeoutError('The request took too long to complete. Please try again.');
+    }
+    throw error;
   }
 }
 
@@ -51,7 +82,7 @@ async function handleResponse(response, customMessages = {}) {
 }
 
 export async function login(email, password) {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     credentials: 'include', // Important: sends and receives cookies
     headers: {
@@ -67,7 +98,7 @@ export async function login(email, password) {
 }
 
 export async function logout() {
-  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/auth/logout`, {
     method: 'POST',
     credentials: 'include', // Important: to clear the cookie
   });
@@ -76,7 +107,7 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/auth/me`, {
     method: 'GET',
     credentials: 'include', // Important: sends the cookie
   });
@@ -91,7 +122,7 @@ export async function getCurrentUser() {
 }
 
 export async function generateTimesheetTemplate(email) {
-  const response = await fetch(`${API_BASE_URL}/timesheet/generate`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/timesheet/generate`, {
     method: 'POST',
     credentials: 'include', // Important: sends the cookie for authentication
     headers: {
