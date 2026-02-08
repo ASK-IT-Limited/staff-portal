@@ -312,14 +312,19 @@ const SCREEN_TITLES = {
   amy: 'Amy',
 };
 
+const VALID_SCREENS = ['dashboard', 'profile', 'timesheet', 'amy'];
+
 export function Dashboard({ employee, onRefresh, onLogout }) {
   const [activeScreen, setActiveScreen] = useState(() => {
-    return localStorage.getItem('activeScreen') || 'dashboard';
+    const saved = localStorage.getItem('activeScreen');
+    return VALID_SCREENS.includes(saved) ? saved : 'dashboard';
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('activeScreen', activeScreen);
+    if (VALID_SCREENS.includes(activeScreen)) {
+      localStorage.setItem('activeScreen', activeScreen);
+    }
   }, [activeScreen]);
 
   const handleNavClick = (screen) => {
@@ -328,8 +333,10 @@ export function Dashboard({ employee, onRefresh, onLogout }) {
   };
 
   const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
+    if (!name || typeof name !== 'string') return 'U';
+    // Sanitize input to prevent any potential XSS
+    const sanitized = name.replace(/[<>]/g, '');
+    return sanitized
       .split(' ')
       .map((n) => n[0])
       .join('')

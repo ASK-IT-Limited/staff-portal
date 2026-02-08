@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { Calendar, AlertCircle, Loader2 } from 'lucide-react';
 import { generateTimesheetTemplate } from '../../services/api';
@@ -92,7 +92,9 @@ export function TimesheetGenerator({ employee }) {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(null);
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
+    if (isLoading) return; // Prevent multiple simultaneous requests
+    
     setIsLoading(true);
     setStatus(null);
 
@@ -104,7 +106,7 @@ export function TimesheetGenerator({ employee }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [employee?.email, isLoading]);
 
   return (
     <>

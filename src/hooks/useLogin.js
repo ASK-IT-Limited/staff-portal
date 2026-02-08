@@ -18,8 +18,8 @@ export function useLogin() {
     
     setSessionExpiredHandler(handleSessionExpired);
     
-    // Cleanup on unmount
-    return () => setSessionExpiredHandler(null);
+    // Don't clear the handler on unmount to prevent race conditions
+    // The handler will be replaced if component remounts
   }, []);
 
   // Restore session from backend cookie on mount

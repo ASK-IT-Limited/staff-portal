@@ -20,6 +20,9 @@ export function Amy() {
       <IframeContainer>
         <StyledIframe
           src="https://apps.abacus.ai/chatllm/?appId=1503d076aa&hideTopBar=2"
+          sandbox="allow-scripts allow-same-origin allow-forms"
+          referrerPolicy="strict-origin-when-cross-origin"
+          title="Amy AI Assistant"
         />
       </IframeContainer>
     </Card>
